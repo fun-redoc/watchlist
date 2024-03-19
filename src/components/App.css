@@ -1,0 +1,39 @@
+.app {
+    display:grid;
+    height: 100vh;
+    gap:0.1rem;
+    grid-template-columns: 38% 62%;
+    grid-template-rows: 1fr 9fr;
+    grid-template-areas: "head head"
+                         "list detail";
+}
+@media only screen and (max-width:600px) {
+    .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 4fr 5fr;
+        grid-template-areas: "head"
+                            "list" 
+                            "detail";
+    }
+}
+
+.app > #head {
+    grid-area: head;
+    background: lightslategray;
+}
+.app > #list {
+    grid-area: list;
+    background: lightgray;
+}
+
+.app > #detail {
+    grid-area: detail;
+    background: lightsteelblue;
+}
+
+.stockItemRepresentationShort > * {
+    padding-right:1rem;
+}
+.stockItemRepresentationShort > #name {
+    font-size: smaller;
+}
