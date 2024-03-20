@@ -8,7 +8,6 @@ import StockItemRepresentation from "./StockItemRepresentation";
 import MainLayout from "./MainLayout";
 import { useYFin } from "../provider/YFinProvider";
 import { useWatchlist } from "../provider/WatchListProvider";
-import { TWatch, assign } from "../models/watch";
 import StockDetailRepresentation from "./StockDetailRepresentation";
 
 type YFinElem = YFinAutocompleteResult & { i: number; fav: boolean };
@@ -35,7 +34,7 @@ export default function YFinApp({
         {additionalHeaderElements}
       </>
 
-      {yfinCtx.queryResult == "loading" ? (
+      {yfinCtx.queryResult === "loading" ? (
         <p>loading...</p>
       ) : (
         <StockList<YFinElem>
@@ -56,27 +55,17 @@ export default function YFinApp({
           )}
           onSelect={async (s) => {
             setSelected("loading");
-            //const assetDetails = await yfinCtx.getDetails(s as YFinAutocompleteResult)
-            //setSelected(s)
-            //setDetails(assetDetails)
-            yfinCtx
-              .getDetails(s as YFinAutocompleteResult)
-              .then(
-                (assetDetails) => {
-                  setSelected(s);
-                  setDetails(assetDetails);
-                },
-                (error) => {
-                  console.error(error);
-                  setSelected(s);
-                  setDetails(null);
-                },
-              )
-              .catch((error) => {
+            yfinCtx.getDetails(s.symbol).then(
+              (assetDetails) => {
+                setSelected(s);
+                setDetails(assetDetails);
+              },
+              (error) => {
                 console.error(error);
                 setSelected(s);
                 setDetails(null);
-              });
+              },
+            );
           }}
         />
       )}
@@ -87,31 +76,15 @@ export default function YFinApp({
           <StockDetail
             value={{ ...selected, ...details }}
             representation={(s) => <StockDetailRepresentation props={s} />}
-            onAddToWatch={(s) => {
-              if (addToWatch && s) {
-                addToWatch(s);
-              }
-            }}
+            onAddToWatch={addToWatch}
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            onAddToWealth={(s) => {
-              showBuy(s);
-            }}
+            onAddToWealth={showBuy}
           />
         ) : (
           <StockDetail
             value={{ ...selected, ...details }}
-            representation={(s) => <>{s && s.shortName}</>}
-            onAddToWatch={async (s) => {
-              if (s) {
-                const t: TWatch = assign<YFinElem>(s);
-                try {
-                  watchlistCtx.add(t);
-                } catch (error) {
-                  console.error(error);
-                  throw new Error("Someting wrong happened, try again later.");
-                }
-              }
-            }}
+            representation={(s) => <StockDetailRepresentation props={s} />}
+            onAddToWatch={addToWatch}
           />
         )
       ) : (

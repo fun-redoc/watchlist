@@ -1,7 +1,6 @@
 # TODO next
 - introduce caching, maybe by using react query or home grown solution
 - make settingspage responsive again
-- show details of watched items
 - show details styled
 - show charts
 - compute stop loss signals
@@ -13,6 +12,7 @@
 - make sidebar sizable (in css? or rather moving to styledComponents or direct styles in react)
 
 # DONE
+- show details of watched items
 - show details of yfin api items
 - delete from watchlist
 - provide basic setting eg. entry for yfin api key

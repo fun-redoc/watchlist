@@ -14,7 +14,7 @@ function useYFinProvider(): {
   queryResult: YFinAutocompleteResult[] | "loading";
   query: string | null;
   search: (query: string) => void;
-  getDetails: (asset: YFinAutocompleteResult) => Promise<YFinQuoteResult>;
+  getDetails: (symbol: string) => Promise<YFinQuoteResult>;
 } {
   const { autocomplete, getAsset } = useYFinApi();
   // Statemanagement Types
@@ -49,6 +49,7 @@ function useYFinProvider(): {
   );
 
   // fetching data
+  // TODO add abort controller
   useEffect(() => {
     dispatch({ action: "setQueryReslut", param: "loading" });
     searchYFin(query).then((list) =>
@@ -61,8 +62,9 @@ function useYFinProvider(): {
     dispatch({ action: "setQuery", param: query });
   }, []);
 
-  const getDetails = useCallback(async (asset: YFinAutocompleteResult) => {
-    return getAsset(asset.symbol);
+  // TODO add abort controller
+  const getDetails = useCallback(async (symbol: string) => {
+    return getAsset(symbol);
   }, []);
 
   // returning the provider
