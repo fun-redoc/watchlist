@@ -1,6 +1,10 @@
 # TODO next
-- show details of yfin api items
+- introduce caching, maybe by using react query or home grown solution
+- make settingspage responsive again
 - show details of watched items
+- show details styled
+- show charts
+- compute stop loss signals
 - refresh button in Wealth app to fetch newest quote / course data
 - register a sell of an asset
 - number input should be localized
@@ -9,6 +13,7 @@
 - make sidebar sizable (in css? or rather moving to styledComponents or direct styles in react)
 
 # DONE
+- show details of yfin api items
 - delete from watchlist
 - provide basic setting eg. entry for yfin api key
 - repair currency entry in TransactionForm, (try to delete all default values...)
