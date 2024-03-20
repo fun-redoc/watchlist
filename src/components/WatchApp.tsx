@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import "./App.css";
 import StockDetail from "./StockDetail";
 import StockList from "./StockList";
@@ -9,6 +9,15 @@ import MainLayout from "./MainLayout";
 import { TWatch } from "../models/watch";
 import { useWatchlist } from "../provider/WatchListProvider";
 import { YFinQuoteResult } from "../hooks/useYFinApi";
+
+function doCached<FT extends Function>(
+  f: FT,
+  params: Parameters<FT>,
+): ReturnType<FT> {
+  console.log(f.name);
+  // TODO implement caching behavior
+  return f(params);
+}
 
 export default function WatchApp({
   show,
@@ -55,7 +64,8 @@ export default function WatchApp({
         onSelect={async (s) => {
           setSelected(s);
           setDetails("loading");
-          setDetails(await getDetails(s.symbol));
+          const details = await doCached(getDetails, s.symbol);
+          setDetails(details);
         }}
         onDelete={onDelete}
       />
