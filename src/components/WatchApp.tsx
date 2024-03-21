@@ -9,14 +9,45 @@ import MainLayout from "./MainLayout";
 import { TWatch } from "../models/watch";
 import { useWatchlist } from "../provider/WatchListProvider";
 import { YFinQuoteResult } from "../hooks/useYFinApi";
+import { useIndexDB } from "../hooks/useIndexDB";
 
-function doCached<FT extends Function>(
+const DB_NAME_CACHE = "cacheDB";
+const DB_VERSION_CACHE = 1;
+function doCached<RT, FT extends (...args: any) => Promise<RT>>(
   f: FT,
   params: Parameters<FT>,
-): ReturnType<FT> {
-  console.log(f.name);
-  // TODO implement caching behavior
-  return f(params);
+  cacheParams: { timeOutMillis: number } = { timeOutMillis: 1000 },
+): Promise<RT> {
+  const requestDB = window.indexedDB.open(DB_NAME_CACHE, DB_VERSION_CACHE);
+  requestDB.onupgradeneeded = () => {
+    const db = requestDB.result;
+    db.createObjectStore("cache", { keyPath: "key" });
+  };
+  requestDB.onsuccess = () => {
+    const db = requestDB.result;
+    const transaction = db.transaction(["cache"], "readwrite");
+    const objectStore = transaction.objectStore("cache");
+    const request = objectStore.get(params.toString());
+    request.onsuccess = () => {
+      const result = request.result;
+      if (result && result.value) {
+        if (Date.now() - result.value.time < cacheParams.timeOutMillis) {
+          return result.value.value;
+        }
+      }
+      const value = f(...params);
+      objectStore.put({ ...value, time: Date.now(), key: params.toString() });
+      return value;
+    };
+    request.onerror = () => {
+      console.error("No cache available, error:", request.error);
+      return f(...params);
+    };
+  };
+  requestDB.onerror = () => {
+    console.error("No cache DB available, error:", requestDB.error);
+    return f(...params);
+  };
 }
 
 export default function WatchApp({
