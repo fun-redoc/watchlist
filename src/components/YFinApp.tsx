@@ -9,6 +9,7 @@ import MainLayout from "./MainLayout";
 import { useYFin } from "../provider/YFinProvider";
 import { useWatchlist } from "../provider/WatchListProvider";
 import StockDetailRepresentation from "./StockDetailRepresentation";
+import React from "react";
 
 type YFinElem = YFinAutocompleteResult & { i: number; fav: boolean };
 export default function YFinApp({

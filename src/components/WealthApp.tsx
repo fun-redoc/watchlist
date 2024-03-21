@@ -7,6 +7,7 @@ import StockItemRepresentation from './StockItemRepresentation'
 import MainLayout from './MainLayout'
 import { useWealth } from '../provider/WealthProvider'
 import { YFinQuoteResult } from '../hooks/useYFinApi'
+import React from 'react'
 
 export default function WealthApp({show,showBuy,additionalHeaderElements}:
                                   {show:boolean} &

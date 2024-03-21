@@ -73,6 +73,7 @@ export async function  mkDBManager<T extends TProvideNumericID>(dbName:string, s
   //    resolve(store)
   //  })
   //}
+  // TODO - if you only need the store for reading, make it read only => seems faster
   function _getStoreSync():IDBObjectStore {
     if(!db) {throw new Error("DB not initialized.")}
     // Start a transaction and get the object store

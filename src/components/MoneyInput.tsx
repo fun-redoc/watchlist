@@ -1,3 +1,4 @@
+import React from "react"
 import { ChangeEventHandler, useRef } from "react"
 
 export default function MoneyInput({amount, required, id, title, decimalPlaces,onChange}:{amount:number|null, required:boolean, id:string, title:string, decimalPlaces:number, onChange:ChangeEventHandler<HTMLInputElement>}) {

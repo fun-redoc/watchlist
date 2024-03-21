@@ -1,6 +1,7 @@
 import { useEffect, useReducer, useRef } from 'react'
 import './App.css'
 import { useSettings } from '../provider/SettingsProvider'
+import React from 'react'
 
 type TState = {
   apiKey:string|null
