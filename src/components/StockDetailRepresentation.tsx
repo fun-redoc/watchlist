@@ -1,16 +1,18 @@
+import React from "react";
 import { YFinQuoteResult, YFinAutocompleteResult } from "../hooks/useYFinApi";
 
-type YFinElem =
-  | (YFinAutocompleteResult & {
-      i: number;
-      fav: boolean;
-    } & YFinQuoteResult)
-  | null
-  | "loading";
+//type YFinElem =
+//  | (YFinAutocompleteResult & {
+//      i: number;
+//      fav: boolean;
+//    } & YFinQuoteResult)
+//  | null
+//  | "loading";
 export default function StockDetailRepresentation({
   props,
 }: {
-  props: YFinElem;
+  //props: YFinElem;
+  props: YFinQuoteResult | null | "loading"
 }) {
   return (
     <>

@@ -76,7 +76,7 @@ export default function YFinApp({
         ) : showBuy ? (
           <StockDetail
             value={{ ...selected, ...details }}
-            representation={(s) => <StockDetailRepresentation props={s} />}
+            representation={(s) => <StockDetailRepresentation props={s as YFinQuoteResult} />}
             onAddToWatch={addToWatch}
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             onAddToWealth={showBuy}
@@ -84,7 +84,7 @@ export default function YFinApp({
         ) : (
           <StockDetail
             value={{ ...selected, ...details }}
-            representation={(s) => <StockDetailRepresentation props={s} />}
+            representation={(s) => <StockDetailRepresentation props={s as YFinQuoteResult} />}
             onAddToWatch={addToWatch}
           />
         )

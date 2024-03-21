@@ -1,4 +1,5 @@
 # TODO next
+- export doCached as a separate hoot
 - introduce caching, maybe by using react query or home grown solution
 - make settingspage responsive again
 - show details styled
@@ -61,4 +62,5 @@ in this side project i want to write a simple personal stock & wealth watching a
 - language: typescript
 - ui: react, css
 - storage: browser built in indexDB
+- caching: home grown using indexDB
 - mobil: react-native
