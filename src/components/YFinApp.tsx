@@ -7,7 +7,6 @@ import { YFinAutocompleteResult, YFinQuoteResult } from "../hooks/useYFinApi";
 import StockItemRepresentation from "./StockItemRepresentation";
 import MainLayout from "./MainLayout";
 import { useYFin } from "../provider/YFinProvider";
-import { useWatchlist } from "../provider/WatchListProvider";
 import StockDetailRepresentation from "./StockDetailRepresentation";
 import React from "react";
 
@@ -24,7 +23,6 @@ export default function YFinApp({
   additionalHeaderElements?: JSX.Element[];
 }) {
   const yfinCtx = useYFin();
-  const watchlistCtx = useWatchlist();
   const [selected, setSelected] = useState<YFinElem | "loading" | null>(null);
   const [details, setDetails] = useState<YFinQuoteResult | null>(null);
 
@@ -59,7 +57,7 @@ export default function YFinApp({
             yfinCtx.getDetails(s.symbol).then(
               (assetDetails) => {
                 setSelected(s);
-                setDetails(assetDetails);
+                setDetails(assetDetails || null);
               },
               (error) => {
                 console.error(error);

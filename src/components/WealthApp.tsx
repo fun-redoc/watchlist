@@ -28,7 +28,9 @@ export default function WealthApp({show,showBuy,additionalHeaderElements}:
           stockRepresentation={(s) => <StockItemRepresentation kind={wealthCtx.aggregations[s.symbol].kind || "kind unknown"} 
                                                                symbol={s.symbol}
                                                                name={s.shortName || s.longName || "no nmae"}
-                                                               fav={true} /> /* in watchlists is same as fav thus fav=true here */ }
+                                                               count={wealthCtx.aggregations[s.symbol].holding.count}
+                                                               price={wealthCtx.aggregations[s.symbol].holding.avgPrice}
+                                                               /> /* in watchlists is same as fav thus fav=true here */ }
           onSelect={(s)=>{setSelected(s)}}
         />
         {

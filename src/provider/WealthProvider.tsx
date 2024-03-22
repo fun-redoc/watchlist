@@ -1,3 +1,4 @@
+import React from "react";
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer } from "react";
 import { DBManager, mkDBManager } from "../dbmanagement/DBManager";
 import useYFinApi, { YFinQuoteResult } from "../hooks/useYFinApi";
@@ -36,17 +37,21 @@ export type TTransaction = {
     action:"buy" | "sell"
 } & TOrder
 
+interface TAggregate {
+    count:number
+    fees:number
+    netValue:number
+    avgPrice:number
+}
 export type TWealth = {
         symbol:string
         longName?:string
         shortName?:string
         kind?:string
-        amount:number 
         currency?:string
-        expenditures?:number
-        revenue?:number
+        holding:TAggregate
+        sold:TAggregate
         dividend?:number
-        fees?:number
 }
 
 interface TWealthBySymbol {
@@ -203,33 +208,32 @@ function useWealthProvider():{
             return transactions.reduce( (acc, t) =>
             {
                 if(!acc[t.symbol]) {
-                    acc[t.symbol] = {symbol:t.symbol, amount:0}
+                    acc[t.symbol] = {symbol:t.symbol, holding:{count:0, avgPrice:0, fees:0, netValue:0},
+                                                      sold:{count:0, avgPrice:0, fees:0, netValue:0}}
                 }
                 const assetPtr = acc[t.symbol]
                 switch(t.action) {
                     case "buy": 
-                        assetPtr.amount += t.amount
-                        assetPtr.expenditures = assetPtr.expenditures ? assetPtr.expenditures : 0
-                        assetPtr.expenditures += t.amount * t.price
-                        assetPtr.fees = assetPtr.fees ? assetPtr.fees : 0
-                        assetPtr.fees += t.fees
+                        assetPtr.holding.count += t.amount
+                        assetPtr.holding.netValue += t.amount * t.price
+                        assetPtr.holding.fees += t.fees
                         if(assetPtr.currency && assetPtr.currency !== t.currency) {
                             console.error(`currencies dont match for ${t.symbol} (${assetPtr.currency} != ${t.currency})`)
                             throw new Error("curreny mismatch in data, cannot process data.")
                         }
                         assetPtr.currency = t.currency
-                        if(assetPtr.kind && assetPtr.kind !== t.kind) {
+                        if(assetPtr.kind && t.kind && assetPtr.kind !== t.kind) {
                             console.error(`kind dont match for ${t.symbol} (${assetPtr.kind} != ${t.kind})`)
                             throw new Error("kind mismatch in data, cannot process data.")
                         }
-                        assetPtr.kind = t.kind
+                        if(t.kind) {
+                            assetPtr.kind = t.kind
+                        }
                         break
                     case "sell": 
-                        assetPtr.amount -= t.amount
-                        assetPtr.revenue = assetPtr.revenue ? assetPtr.revenue : 0
-                        assetPtr.revenue += t.amount * t.price
-                        assetPtr.fees = assetPtr.fees ? assetPtr.fees : 0
-                        assetPtr.fees += t.fees
+                        assetPtr.sold.count -= t.amount
+                        assetPtr.sold.netValue += t.amount * t.price
+                        assetPtr.sold.fees += t.fees
                         if(assetPtr.currency && assetPtr.currency !== t.currency) {
                             console.error(`currencies dont match for ${t.symbol} (${assetPtr.currency} != ${t.currency})`)
                             throw new Error("curreny mismatch in data, cannot process data.")
@@ -238,6 +242,14 @@ function useWealthProvider():{
                         // deliberatelly 
                         break
                 }
+                assetPtr.holding.avgPrice = (assetPtr.holding.count > 0 ?
+                                         (((assetPtr.holding.netValue || 0) + assetPtr.holding.fees) / assetPtr.holding.count)
+                                         :
+                                         0)
+                assetPtr.sold.avgPrice = (assetPtr.sold.count > 0 ?
+                                         (((assetPtr.sold.netValue || 0) + assetPtr.sold.fees) / assetPtr.sold.count)
+                                         :
+                                         0)
                 return acc
             },{} as TWealthBySymbol)
         } ,[transactions])

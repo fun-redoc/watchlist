@@ -69,7 +69,7 @@ export default function WatchApp({
           <StockDetail
             value={details}
             representation={(s) => <StockDetailRepresentation props={s} />}
-            onAddToWealth={(s) => showBuy(s)}
+            onAddToWealth={() => showBuy(selected)}
           />
         ) : (
           <StockDetail

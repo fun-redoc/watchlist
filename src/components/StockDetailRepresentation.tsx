@@ -1,5 +1,5 @@
 import React from "react";
-import { YFinQuoteResult, YFinAutocompleteResult } from "../hooks/useYFinApi";
+import { YFinQuoteResult } from "../hooks/useYFinApi";
 
 //type YFinElem =
 //  | (YFinAutocompleteResult & {

@@ -1,6 +1,6 @@
 # TODO next
-- export doCached as a separate hoot
-- introduce caching, maybe by using react query or home grown solution
+- fetch chart data and paint it with d3
+- use caching Wealth and YFin App
 - make settingspage responsive again
 - show details styled
 - show charts
@@ -13,6 +13,11 @@
 - make sidebar sizable (in css? or rather moving to styledComponents or direct styles in react)
 
 # DONE
+- fetch quote requests
+- Wealth LIst "kind unknown" why? and fix it (WatchApp lien 72)
+- yfinance api may send an error branch, handle this approppriatelly
+- introduce caching, maybe by using react query or home grown solution
+- export doCached as a separate hoot
 - show details of watched items
 - show details of yfin api items
 - delete from watchlist
@@ -63,4 +68,5 @@ in this side project i want to write a simple personal stock & wealth watching a
 - ui: react, css
 - storage: browser built in indexDB
 - caching: home grown using indexDB
-- mobil: react-native
+- charting: d3
+- mobil (maybe in future): react-native

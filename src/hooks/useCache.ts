@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback } from "react";
 
 const DB_NAME_CACHE = "cacheDB";
@@ -12,6 +13,7 @@ export default function useCache<RT, FT extends (...args: any) => Promise<RT>>(f
     return useCallback((params:Parameters<FT>) => doCache<RT, FT>(f, params, cacheParams),[f,cacheParams])
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function doCache<RT, FT extends (...args: any) => Promise<RT>>(
   f: FT,
   params: Parameters<FT>,

@@ -1,3 +1,4 @@
+import React from "react"
 import {
   createContext,
   useCallback,
@@ -7,6 +8,7 @@ import {
 } from "react";
 import useYFinApi, {
   YFinAutocompleteResult,
+  YFinChartResult,
   YFinQuoteResult,
 } from "../hooks/useYFinApi";
 
@@ -14,9 +16,10 @@ function useYFinProvider(): {
   queryResult: YFinAutocompleteResult[] | "loading";
   query: string | null;
   search: (query: string) => void;
-  getDetails: (symbol: string) => Promise<YFinQuoteResult>;
+  getDetails: (symbol: string) => Promise<YFinQuoteResult | undefined>;
+  chart: (symbol:string) => Promise<YFinChartResult>;
 } {
-  const { autocomplete, getAsset } = useYFinApi();
+  const { autocomplete, getAsset, getChart } = useYFinApi();
   // Statemanagement Types
   async function searchYFin(
     q?: string | null,
@@ -65,10 +68,14 @@ function useYFinProvider(): {
   // TODO add abort controller
   const getDetails = useCallback(async (symbol: string) => {
     return getAsset(symbol);
-  }, []);
+  }, [getAsset]);
+
+  const chart = useCallback(async (symbol:string) => {
+    return getChart(symbol)
+  },[getChart])
 
   // returning the provider
-  return { queryResult, query, search, getDetails };
+  return { queryResult, query, search, getDetails, chart };
 }
 
 const YFinContext = createContext<ReturnType<typeof useYFinProvider>>(
