@@ -11,7 +11,7 @@ export interface ModalProps {
     onHide?:() => void
 }
 
-// TODO this should be also feasible without imperativeHandle but with simple params
+// Improvement: this should be also feasible without imperativeHandle but with simple params
 // otherwise the callbacks onShow, and onHide could be usefull aswell
 function _Modal(props:ModalProps,ref:Ref<ModalRef>) {
     const [show, setShow] = useState<boolean>(false)

@@ -87,7 +87,7 @@ const api_getAssetBatch = () => {
   }
   return { MAX_BATCH_SIZE, fetchBatch:api_fetchBatch };
 }
-  // TODO do I really need useCallback here, maybebetter in calling Provider context
+  // Refactor: do I really need useCallback here, maybebetter in calling Provider context
   const api_autocomplete = //useCallback(
     async (
       q: string | null,
@@ -167,8 +167,6 @@ const api_getAssetBatch = () => {
   }
 }
 
-// TODO replace mocks by real requests to api
-//      cache requests to save money
 export class AuthError {
   status: number | undefined = undefined;
   statusText: string | undefined = undefined;

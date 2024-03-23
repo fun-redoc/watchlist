@@ -202,7 +202,7 @@ function useWealthProvider():{
 
 
     // accregations use memo depending on transacitons
-    // TODO if takes to long compute assyncronously and return Promise
+    // Improvement: if takes to long compute assyncronously and return Promise
     const aggregations = useMemo( () => 
         {
             return transactions.reduce( (acc, t) =>
@@ -255,7 +255,6 @@ function useWealthProvider():{
         } ,[transactions])
 
     // search use memo and use callback depending on query and aggregations
-    // TODO provide some kind of sorting
     const filteredMasterdata = useMemo(
         () => Object.entries<YFinQuoteResult>(masterData).filter(([,x])=>matchQuery<YFinQuoteResult>(x,query))
                     .reduce((acc,[k,v])=>{acc[k]=v;return acc},{} as YFinQuoteBySymbol),
@@ -267,7 +266,7 @@ function useWealthProvider():{
     },[])
 
     // buy & sell use callback no dependencies
-    // TODO on sell 1. shlould the symbol remain in the list when completly sold?
+    // Improvement: on sell 1. shlould the symbol remain in the list when completly sold?
     function newTransacton(action:TTransaction["action"], order:TOrder, transactions:TTransaction[]) {
         const newTransaction =  {...order, action:action} as TTransaction 
         db?.add(newTransaction)

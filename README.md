@@ -1,5 +1,6 @@
 # TODO next
 - fetch chart data and paint it with d3
+- switch to DevContainers
 - use caching Wealth and YFin App
 - make settingspage responsive again
 - show details styled
@@ -10,11 +11,22 @@
 - number input should be localized
 - delete all entries of watchlist
 - check responsivenes of the app when there is lots of data in the indexDB, mock latency in access to yfin api
+- settings.ts: clear, reset feature
+- provide some kind of sorting for the query results, mayb generally a sorting feature in the UI (WatchListProvider.tsx, WealthProvider.tsx)
 - make sidebar sizable (in css? or rather moving to styledComponents or direct styles in react)
+- consider using react router instead of AppMode switch (App.tsx)
+- this should be also feasible without imperativeHandle but with simple params otherwise the callbacks onShow, and onHide could be usefull aswell (Modal.tsx)
+- if you only need the store for reading, make it read only => seems faster (DBManager.ts)
+- update, add, get, clearAll, delete have lots of bolierplate which cann be abstracted and unified eg. using callback (DBManager.ts)
+- do I really need useCallback here, maybebetter in calling Provider context (useYFinApi.ts)
+- in useYFinApi.ts - remove all mock code, transfer it into a "testing area", create a testmode maybe using a dedicated framework
+- WealthProvider.tsx, effect computing aggregations, if takes to long compute assyncronously and return Promise
+- WealthProvider.tsx: mayb it would be more suitable if on sell the symbol remains in the list when completly sold? check out alternative approaches which feels better
+- generally add abort controller everywhere there is access to fech api, especially in useEffect hooks with abort return (YFinPRovider.tsx)
 
 # DONE
 - fetch quote requests
-- Wealth LIst "kind unknown" why? and fix it (WatchApp lien 72)
+- Wealth List "kind unknown" why? and fix it (WatchApp lien 72)
 - yfinance api may send an error branch, handle this approppriatelly
 - introduce caching, maybe by using react query or home grown solution
 - export doCached as a separate hoot

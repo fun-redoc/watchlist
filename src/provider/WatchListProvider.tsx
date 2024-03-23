@@ -66,7 +66,6 @@ function useWatchlistProvider():{
     },[])
 
     // memoized values
-    // TODO provide some kind of sorting
     const filteredWatchlist = useMemo(
         () => filterByQuery(watchlist, query),
         [watchlist, query]

@@ -52,7 +52,7 @@ function useYFinProvider(): {
   );
 
   // fetching data
-  // TODO add abort controller
+  // Refator: add abort controller
   useEffect(() => {
     dispatch({ action: "setQueryReslut", param: "loading" });
     searchYFin(query).then((list) =>
@@ -65,7 +65,7 @@ function useYFinProvider(): {
     dispatch({ action: "setQuery", param: query });
   }, []);
 
-  // TODO add abort controller
+  // Refactor: add abort controller
   const getDetails = useCallback(async (symbol: string) => {
     return getAsset(symbol);
   }, [getAsset]);

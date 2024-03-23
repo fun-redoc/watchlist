@@ -45,7 +45,7 @@ function useSettingContextProvider() {
     useEffect(()=>{ // db connection
         mkDBManager<DBWatchlistAppSettings>(DB_NAME_SETTINGS, "settings", DB_VERSION_SETTINGS, [{indexName:"id", isUnique:true}, {indexName:"timestamp", isUnique:true}] )
             .then(newDb=> {
-                // TODO which is better, fetching all in a single effect or having multiple dependent effects....?
+                // Improvement: which is better?, fetching all in a single effect or having multiple dependent effects....?
                 //newDb.list()
                 //    .catch(reason => {
                 //        console.error(reason)

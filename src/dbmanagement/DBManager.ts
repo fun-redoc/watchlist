@@ -73,7 +73,7 @@ export async function  mkDBManager<T extends TProvideNumericID>(dbName:string, s
   //    resolve(store)
   //  })
   //}
-  // TODO - if you only need the store for reading, make it read only => seems faster
+  // Improvment: - if you only need the store for reading, make it read only => seems faster
   function _getStoreSync():IDBObjectStore {
     if(!db) {throw new Error("DB not initialized.")}
     // Start a transaction and get the object store
@@ -244,6 +244,6 @@ export async function  mkDBManager<T extends TProvideNumericID>(dbName:string, s
     })
   }
 
-  // TODO update, add, get, clearAll, delete have lots of bolierplate which cann be abstracted and unified eg. using callback
+  // Improvement: update, add, get, clearAll, delete have lots of bolierplate which cann be abstracted and unified eg. using callback
   return new Promise<DBManager<T>>(resolve => resolve({add, update, del, get, list, clearAll, accessDBStore }))
 }

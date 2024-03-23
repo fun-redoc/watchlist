@@ -52,7 +52,6 @@ export default function App() {
     },
   );
 
-  // TODO consider using react router instead of AppMode switch
 
   useEffect(() => {
     if (buyFromWatchlist) modalRef?.current?.show();
