@@ -1,5 +1,7 @@
 # TODO next
-- fetch chart data and paint it with d3
+- WealthApp: fetch chart data and paint it with d3 . linechart, timeseries
+- YFinApp: fetch chart data and paint it with d3 - mayb candelstick is better
+- WatchApp: fetch chart data and paint it with d3 - mayb candelstick is better
 - switch to DevContainers
 - use caching Wealth and YFin App
 - make settingspage responsive again
@@ -10,6 +12,8 @@
 - register a sell of an asset
 - number input should be localized
 - delete all entries of watchlist
+- useFinaApi.ts:api_getChart function ... refactore it: result[0] takes the first result, but the index is also relevant in quote and adjquote...
+  //      this can lead to mistakes, better solution could be constructing an own appropirate data structure
 - check responsivenes of the app when there is lots of data in the indexDB, mock latency in access to yfin api
 - settings.ts: clear, reset feature
 - provide some kind of sorting for the query results, mayb generally a sorting feature in the UI (WatchListProvider.tsx, WealthProvider.tsx)

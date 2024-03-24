@@ -37,3 +37,7 @@
 .stockItemRepresentationShort > #name {
     font-size: smaller;
 }
+
+.line-chart {
+    border: 1px solid lightgray;    
+}

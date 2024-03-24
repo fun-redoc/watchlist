@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useSettings } from "../provider/SettingsProvider";
 
 export default function useYFinApi(useMock = true): {
@@ -68,27 +68,30 @@ export default function useYFinApi(useMock = true): {
         console.error(error);
         throw new Error("failed to fetch data.");
       }
-  },
-    [settingsCtx?.apiKey])
-  async function api_getChart(symbol:string, abortController?:AbortController) : Promise<YFinChartResult> {
+  }, [settingsCtx?.apiKey])
+
+  // Refactor: result[0] takes the first result, but the index is also relevant in quote and adjquote...
+  //           this can lead to mistakes, better solution could be constructing an own appropirate data structure
+  const api_getChart = useCallback(async (symbol:string, abortController?:AbortController) : Promise<YFinChartResult> => {
       const query = `chart/${symbol}?region=DE&lang=de&range=max&interval=1d&events=div,split`;
       return api_request<YFinChartResponse>(query, abortController)
         .then(response => response.chart.result[0] )
-  }
+  },[])
 
-const api_getAssetBatch = () => {
-  const MAX_BATCH_SIZE = 10;
-  async function api_fetchBatch(batchOfSymbols:string[], abortController?:AbortController) : Promise<YFinQuoteResult[]> {
-      const symbols=batchOfSymbols.join(',')
-      const query = `quote?region=DE&lang=de&symbols=${encodeURI(symbols)}`;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return api_request<any>(query, abortController)
-        .then(response => response["quoteResponse"]["result"] )
-  }
-  return { MAX_BATCH_SIZE, fetchBatch:api_fetchBatch };
-}
+  const api_getAssetBatch = useCallback( () => {
+    const MAX_BATCH_SIZE = 10;
+    async function api_fetchBatch(batchOfSymbols:string[], abortController?:AbortController) : Promise<YFinQuoteResult[]> {
+        const symbols=batchOfSymbols.join(',')
+        const query = `quote?region=DE&lang=de&symbols=${encodeURI(symbols)}`;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return api_request<any>(query, abortController)
+          .then(response => response["quoteResponse"]["result"] )
+    }
+    return { MAX_BATCH_SIZE, fetchBatch:api_fetchBatch };
+  },[api_request])
+
   // Refactor: do I really need useCallback here, maybebetter in calling Provider context
-  const api_autocomplete = //useCallback(
+  const api_autocomplete = useCallback(
     async (
       q: string | null,
       abortController?: AbortController,
@@ -98,73 +101,29 @@ const api_getAssetBatch = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return api_request<any>(query, abortController)
               .then(response => response["ResultSet"]["Result"] )
-//      const query = service + "&query=" + q;
-//      const headers: Headers = new Headers();
-//      headers.append("accept", "application/json");
-//      if (settingsCtx?.apiKey) {
-//        headers.append("X-API-KEY", settingsCtx?.apiKey);
-//      } else {
-//        console.error("no api key provided in settings.");
-//        throw new Error(
-//          "No api key for yfinance found in settings. Edit your settings and try again.",
-//        );
-//      }
-//      const service =
-//        "https://yfapi.net/v6/finance/autocomplete?region=DE&lang=de";
-//      const query = service + "&query=" + q;
-//      try {
-//        const response = await fetch(query, {
-//          method: "get",
-//          headers: headers,
-//          mode: "cors",
-//          cache: "force-cache",
-//          signal: abortController?.signal,
-//        });
-//        if (response.status === 401 || response.status === 403) {
-//          throw {
-//            status: response.status,
-//            statusText: response.statusText,
-//          } as AuthError;
-//        }
-//        if (!response.ok) {
-//          throw {
-//            status: response.status,
-//            statusText: response.statusText,
-//          } as ApiError;
-//        }
-//        const result = await response.json();
-//        if (Object.prototype.hasOwnProperty.call(result, "error")) {
-//          console.error(result);
-//          throw new Error(result);
-//        }
-//        return result["ResultSet"]["Result"];
-//      } catch (error) {
-//        console.error(error);
-//        throw new Error("failed to fetch data.");
-//      }
-    }
-//   ,[settingsCtx?.apiKey],
-//  );
+    },[])
 
-  if (useMock) {
-    return {
-      autocomplete: mock_autocomplete,
-      getAsset: (symbol: string, abortController?: AbortController) =>
-        mock_getAsset(symbol, abortController, 1500),
-      getAssetBatch: mock_getAssetBatch(),
-      getChart: mock_getChart
-    };
-  } else {
-    return {
-      autocomplete: api_autocomplete,
-      getAsset: (symbol:string, abortController?:AbortController) => {
-        return api_getAssetBatch().fetchBatch([symbol], abortController)
-                .then(arrResult => arrResult.pop())
-      },
-      getAssetBatch: api_getAssetBatch(),
-      getChart: api_getChart
-    };
-  }
+  return useMemo<ReturnType<typeof useYFinApi>>(() => {
+    if (useMock) { 
+      return {
+        autocomplete: mock_autocomplete,
+        getAsset: (symbol: string, abortController?: AbortController) =>
+          mock_getAsset(symbol, abortController, 1500),
+        getAssetBatch: mock_getAssetBatch(),
+        getChart: mock_getChart
+      }
+    } else {
+      return {
+        autocomplete: api_autocomplete,
+        getAsset: (symbol:string, abortController?:AbortController) => {
+          return api_getAssetBatch().fetchBatch([symbol], abortController)
+                  .then(arrResult => arrResult.pop())
+        },
+        getAssetBatch: api_getAssetBatch(),
+        getChart: api_getChart
+      }
+    }
+  },[api_autocomplete, api_getAssetBatch, api_getChart, useMock])
 }
 
 export class AuthError {
@@ -833,7 +792,7 @@ export async function mock_getChart(symbol:string, abortController?:AbortControl
                 79.43800354003906,
                 80.23600006103516,
                 80.80400085449219,
-                79,
+                79.0,
                 81.3759994506836,
                 80.21800231933594,
                 80.35199737548828,
@@ -1218,9 +1177,12 @@ export async function mock_getChart(symbol:string, abortController?:AbortControl
 } 
   return new Promise<YFinChartResult>((resolve) => {
     const timeoutHandel = setTimeout(() => {
+      console.log("response after timeout!", response )
+      console.log(response["chart"]["result"][0]);
       resolve(response["chart"]["result"][0]);
     }, 1500);
     abortController?.signal.addEventListener("abort", () => {
+      console.log("clear timeout")
       clearTimeout(timeoutHandel);
     });
   });
