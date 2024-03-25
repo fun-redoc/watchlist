@@ -9,6 +9,8 @@ import MainLayout, { MainLayoutRef } from './MainLayout'
 import { useWealth } from '../provider/WealthProvider'
 import { YFinQuoteResult } from '../hooks/useYFinApi'
 import Chart from './Chart'
+import Menu from './Menu'
+import MenuItem from './MenuItem'
 
 export default function WealthApp({show,showBuy,additionalHeaderElements}:
                                   {show:boolean} &
@@ -37,12 +39,17 @@ export default function WealthApp({show,showBuy,additionalHeaderElements}:
     }
   },[mainLayoutRef])
               
+  const onChangeRange = useCallback((v:string) => {console.log(`range ${v} selected`)}, [])
 
   return (
     <MainLayout show={show} ref={mainLayoutRef}>
         <>
           <StockSearch onSearch={q=> { wealthCtx.search(q) }}/>
           { additionalHeaderElements }
+          <Menu title="Chart Range"  onChange={onChangeRange} >
+            <MenuItem value="1d" title="One Day" /> 
+            <MenuItem value="5d" title="Five Days" /> 
+          </Menu>
         </>
 
         <StockList<YFinQuoteResult> 

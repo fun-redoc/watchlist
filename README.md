@@ -1,11 +1,13 @@
 # TODO next
-- WealthApp: fetch chart data and paint it with d3 . linechart, timeseries
+- after selection dcroll to the details, provide geture or buttom to jump back to list or detail..
+- proper resizing of the Chart (WealthApp e.a) - resize event and maybe a separrate chart container div to improve the client Area calculation..
 - YFinApp: fetch chart data and paint it with d3 - mayb candelstick is better
 - WatchApp: fetch chart data and paint it with d3 - mayb candelstick is better
 - switch to DevContainers
 - use caching Wealth and YFin App
 - make settingspage responsive again
 - show details styled
+- style everything with css
 - show charts
 - compute stop loss signals
 - refresh button in Wealth app to fetch newest quote / course data
@@ -29,6 +31,7 @@
 - generally add abort controller everywhere there is access to fech api, especially in useEffect hooks with abort return (YFinPRovider.tsx)
 
 # DONE
+- WealthApp: fetch chart data and paint it with d3 . linechart, timeseries
 - fetch quote requests
 - Wealth List "kind unknown" why? and fix it (WatchApp lien 72)
 - yfinance api may send an error branch, handle this approppriatelly
