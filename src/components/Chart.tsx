@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import * as d3 from 'd3'
-import useYFinApi, { YFinChartResult } from "../hooks/useYFinApi";
+import useYFinApi, { ChartParams, YFinChartResult } from "../hooks/useYFinApi";
+import useCache from "../hooks/useCache";
 
 interface ChartData {
     date:Date
@@ -13,11 +14,21 @@ function parseData(data:YFinChartResult):ChartData[] {
     })
 }
 
+interface ChartProps {
+    symbol:string
+    range:ChartParams["range"]
+    interval:ChartParams["interval"]
+    event:ChartParams["event"]
+    height?:number|undefined
+    width?:number|undefined
+}
+
 // TODO show  error state
 // TODO handle stock splits appropriatelly
 // TODO chart exceeds the vieport...fix it
-export default function Chart({symbol, height, width}:{symbol:string, height?:number|undefined, width?:number|undefined}) {
-    const yfinCtx = useYFinApi()
+export default function Chart({symbol, range, interval, event, height, width}:ChartProps) {
+    const yfinCtx = useYFinApi(false)
+    const getChartWithCache = useCache<YFinChartResult, typeof yfinCtx.getChart>(yfinCtx.getChart);
     const svgRev = useRef<SVGSVGElement>(null)
     const [yfinData, setYFinData] = useState<YFinChartResult|null>(null)
     const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -27,7 +38,7 @@ export default function Chart({symbol, height, width}:{symbol:string, height?:nu
        console.log("effect fetch yfin for symbol", symbol)
        setIsLoading(true)
        const abortController = new AbortController()
-       yfinCtx.getChart(symbol, abortController)
+       getChartWithCache([symbol, {range, interval, event}, abortController])
                     .then(result => {
                         console.log("fetched data", result)
                         setYFinData(result)

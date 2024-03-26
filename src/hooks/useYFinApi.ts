@@ -19,6 +19,7 @@ export default function useYFinApi(useMock = true): {
   };
   getChart: (
     symbol: string,
+    chartParams:ChartParams
     abortController?: AbortController,
   ) => Promise<YFinChartResult>;
 } {
@@ -72,8 +73,8 @@ export default function useYFinApi(useMock = true): {
 
   // Refactor: result[0] takes the first result, but the index is also relevant in quote and adjquote...
   //           this can lead to mistakes, better solution could be constructing an own appropirate data structure
-  const api_getChart = useCallback(async (symbol:string, abortController?:AbortController) : Promise<YFinChartResult> => {
-      const query = `chart/${symbol}?region=DE&lang=de&range=max&interval=1d&events=div,split`;
+  const api_getChart = useCallback(async (symbol:string, chartParams:ChartParams, abortController?:AbortController) : Promise<YFinChartResult> => {
+      const query = `chart/${symbol}?region=DE&lang=de&range=${chartParams.range}&interval=${chartParams.interval}${chartParams.event ? "&events=" + chartParams.event : ""}`;
       return api_request<YFinChartResponse>(query, abortController)
         .then(response => response.chart.result[0] )
   },[])
@@ -197,6 +198,17 @@ export type YFinAutocompleteResult = {
   typeDisp: string;
 };
 
+export const _range= ["1d" ,"5d" ,"1d" ,"5d" ,"1mo","3mo","6mo","1y" ,"5y" ,"10y","ytd","max"] as const
+export const _interval= ["1m"  ,"5m"  ,"15m" ,"1d"  ,"1wk" ,"1mo"] as const
+export const _event= ["div" , "split" , null] as const
+export type ChartParams = {
+  //range: "1d" |"5d" |"1d" |"5d" |"1mo"|"3mo"|"6mo"|"1y" |"5y" |"10y"|"ytd"|"max"
+  //interval: "1m"  |"5m"  |"15m" |"1d"  |"1wk" |"1mo"
+  //event: "div" | "split" | null
+  range: typeof _range[number]
+  interval: typeof _interval[number]
+  event: typeof _event[number]
+}
  interface YFinChartResponse {
   chart: Chart
 }
@@ -277,7 +289,7 @@ export interface Adjclose {
 }
 
 
-export async function mock_getChart(symbol:string, abortController?:AbortController) : Promise<YFinChartResult> {
+export async function mock_getChart(symbol:string, params:ChartParams, abortController?:AbortController) : Promise<YFinChartResult> {
   console.warn("using mock autocomplete");
   const response = 
  {
@@ -286,7 +298,7 @@ export async function mock_getChart(symbol:string, abortController?:AbortControl
       {
         "meta": {
           "currency": "EUR",
-          "symbol": "XDWD.DE",
+          "symbol": symbol,
           "exchangeName": "GER",
           "instrumentType": "ETF",
           "firstTradeDate": 1408086000,

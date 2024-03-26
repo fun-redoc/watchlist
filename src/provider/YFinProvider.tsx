@@ -7,6 +7,7 @@ import {
   useReducer,
 } from "react";
 import useYFinApi, {
+  ChartParams,
   YFinAutocompleteResult,
   YFinChartResult,
   YFinQuoteResult,
@@ -17,7 +18,7 @@ function useYFinProvider(): {
   query: string | null;
   search: (query: string) => void;
   getDetails: (symbol: string) => Promise<YFinQuoteResult | undefined>;
-  chart: (symbol:string) => Promise<YFinChartResult>;
+  chart: (symbol:string, params:ChartParams) => Promise<YFinChartResult>;
 } {
   const { autocomplete, getAsset, getChart } = useYFinApi();
   // Statemanagement Types
@@ -70,8 +71,8 @@ function useYFinProvider(): {
     return getAsset(symbol);
   }, [getAsset]);
 
-  const chart = useCallback(async (symbol:string) => {
-    return getChart(symbol)
+  const chart = useCallback(async (symbol:string, params:ChartParams) => {
+    return getChart(symbol, params)
   },[getChart])
 
   // returning the provider
