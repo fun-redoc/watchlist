@@ -1,40 +1,43 @@
 # TODO next
-- fetching charts in WealthApp - useCache does not use cache
-- chart print title
-- chart events: currently one can choose div or split, one should be able to choose div and split as well
-- useYFinProvider vs. useYFinApi.... Problems: 2 places to set useMock Parameter, on the other side, Chart would be less reusable with dependency on Provider...maybe Chart schuld not be dependent on anything?
 - after selection scroll to the details, provide geture or buttom to jump back to list or detail..
 - proper resizing of the Chart (WealthApp e.a) - resize event and maybe a separrate chart container div to improve the client Area calculation..
 - YFinApp: fetch chart data and paint it with d3 - mayb candelstick is better
 - WatchApp: fetch chart data and paint it with d3 - mayb candelstick is better
-- switch to DevContainers
-- use caching Wealth and YFin App
+- use caching YFin App
 - make settingspage responsive again
 - show details styled
 - style everything with css
-- show charts
-- compute stop loss signals
+- compute stop loss signals (or get ATP)
 - refresh button in Wealth app to fetch newest quote / course data
 - register a sell of an asset
 - number input should be localized
 - delete all entries of watchlist
+- deleting all caches (in settings App)
 - useFinaApi.ts:api_getChart function ... refactore it: result[0] takes the first result, but the index is also relevant in quote and adjquote...
   //      this can lead to mistakes, better solution could be constructing an own appropirate data structure
 - check responsivenes of the app when there is lots of data in the indexDB, mock latency in access to yfin api
 - settings.ts: clear, reset feature
 - provide some kind of sorting for the query results, mayb generally a sorting feature in the UI (WatchListProvider.tsx, WealthProvider.tsx)
 - make sidebar sizable (in css? or rather moving to styledComponents or direct styles in react)
-- consider using react router instead of AppMode switch (App.tsx)
 - this should be also feasible without imperativeHandle but with simple params otherwise the callbacks onShow, and onHide could be usefull aswell (Modal.tsx)
-- if you only need the store for reading, make it read only => seems faster (DBManager.ts)
 - update, add, get, clearAll, delete have lots of bolierplate which cann be abstracted and unified eg. using callback (DBManager.ts)
-- do I really need useCallback here, maybebetter in calling Provider context (useYFinApi.ts)
-- in useYFinApi.ts - remove all mock code, transfer it into a "testing area", create a testmode maybe using a dedicated framework
-- WealthProvider.tsx, effect computing aggregations, if takes to long compute assyncronously and return Promise
-- WealthProvider.tsx: mayb it would be more suitable if on sell the symbol remains in the list when completly sold? check out alternative approaches which feels better
-- generally add abort controller everywhere there is access to fech api, especially in useEffect hooks with abort return (YFinPRovider.tsx)
+
+# MAYBE
++ consider using react router instead of AppMode switch (App.tsx)
++ if you only need the store for reading, make it read only => seems faster (DBManager.ts)
++ do I really need useCallback here, maybebetter in calling Provider context (useYFinApi.ts)
++ in useYFinApi.ts - remove all mock code, transfer it into a "testing area", create a testmode maybe using a dedicated framework
++ WealthProvider.tsx, effect computing aggregations, if takes to long compute assyncronously and return Promise
++ WealthProvider.tsx: mayb it would be more suitable if on sell the symbol remains in the list when completly sold? check out alternative approaches which feels better
++ switch to DevContainers
 
 # DONE
+- generally add abort controller everywhere there is access to fech api, especially in useEffect hooks with abort return (YFinPRovider.tsx)
+- use caching Wealth
+- useYFinProvider vs. useYFinApi.... Problems: 2 places to set useMock Parameter, on the other side, Chart would be less reusable with dependency on Provider...maybe Chart schuld not be dependent on anything?
+- chart events: currently one can choose div or split, one should be able to choose div and split as well
+- chart print title
+- fetching charts in WealthApp - useCache does not use cache
 - WealthApp: fetch chart data and paint it with d3 . linechart, timeseries
 - fetch quote requests
 - Wealth List "kind unknown" why? and fix it (WatchApp lien 72)
@@ -59,6 +62,8 @@
 - Add to watchlis schould immidaitelly show the star in the list
 - highlight watched items (with star sign) in the search list
 - store item to watch in indexDB
+
+
 
 # Watchlist Project
 

@@ -33,7 +33,7 @@ export default function Menu<T>({title, opened, onOpen, onClose, onChange, child
                 <ul className="menu">
                     {
                         children.map((child, i) => {
-                            return <li key={i} className="menuItem" onClick={() => {setOpen(false); onChange && onChange(child.props.value)}}>
+                            return <li key={i} className="menuItem" onClick={() => {setOpen(false); onChange && onChange(child.props.value); onClose && onClose()}}>
                                 {child}
                             </li>
                         })

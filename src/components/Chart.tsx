@@ -47,19 +47,23 @@ export default function Chart({title, data, height, width}:ChartProps) {
 // //   const chartData = useMemo(() =>  yfinData  && parseData(yfinData), [yfinData]) 
 //
     useEffect(() => {
-        console.log("hier", data)
+        console.log("painting chart", data)
         if(svgRev && data && data?.length > 0) {
-        console.log(" und hier")
+        console.log(" really painting chart")
             const svgWidth = width || 200, svgHeight = height || 100
             const margin = { top: 20, right: 20, bottom: 30, left: 50 }
             const width1 = svgWidth - margin.left - margin.right
             const height1 = svgHeight - margin.top - margin.bottom
 
+            d3.selectAll('svg > g > *').remove()
+            
             const svg = d3.select(svgRev.current)
                             .attr("width", svgWidth)
                             .attr("height", svgHeight)
+
             const g = svg.append("g")
                             .attr("transform",`translate(${margin.left}, ${margin.top})`);
+            
             
             // TODO may taking range data is better from the "metadata" branch of the api response
             const x = d3.scaleTime().rangeRound([0, width1]);
@@ -109,7 +113,7 @@ export default function Chart({title, data, height, width}:ChartProps) {
                 .attr("d", line);
         }
 
-    }, [svgRev]) //, width, height]) // TODO handling of size changes is not adequate, it refers to the wrong element
+    }, [svgRev, data]) //, width, height]) // TODO handling of size changes is not adequate, it refers to the wrong element
 
     console.log(`width=${width}, height=${height}`)
     return  <>

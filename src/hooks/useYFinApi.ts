@@ -212,7 +212,7 @@ export type YFinAutocompleteResult = {
 
 export const _range= ["1d" ,"5d" ,"1d" ,"5d" ,"1mo","3mo","6mo","1y" ,"5y" ,"10y","ytd","max"] as const
 export const _interval= ["1m"  ,"5m"  ,"15m" ,"1d"  ,"1wk" ,"1mo"] as const
-export const _event= ["div" , "split" , null] as const
+export const _event= ["div" , "split" , "div,split", null] as const
 export type ChartParams = {
   //range: "1d" |"5d" |"1d" |"5d" |"1mo"|"3mo"|"6mo"|"1y" |"5y" |"10y"|"ytd"|"max"
   //interval: "1m"  |"5m"  |"15m" |"1d"  |"1wk" |"1mo"
