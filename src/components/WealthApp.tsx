@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useState } from 'react'
 import './App.css'
 import StockDetail from './StockDetail'
@@ -7,40 +7,85 @@ import StockSearch from './StockSearch'
 import StockItemRepresentation from './StockItemRepresentation'
 import MainLayout, { MainLayoutRef } from './MainLayout'
 import { useWealth } from '../provider/WealthProvider'
-import { ChartParams, YFinQuoteResult, _interval, _range } from '../hooks/useYFinApi'
-import Chart from './Chart'
+import { ChartParams, YFinChartResult, YFinQuoteResult, _interval, _range } from '../hooks/useYFinApi'
+import Chart, { ChartData } from './Chart'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
+import { useYFin } from '../provider/YFinProvider'
+import useCache from '../hooks/useCache'
+
+function parseData(data:YFinChartResult):ChartData[] {
+    return data.timestamp.map((timestamp, i) => {
+        return {date:new Date(timestamp*1000), value:data.indicators.quote[0].close[i]} // prerequisite cart was fetched without "comparisons" parameter, beware!
+    })
+}
 
 export default function WealthApp({show,showBuy,additionalHeaderElements}:
                                   {show:boolean} &
                                   {showBuy?:(selected:YFinQuoteResult)=>void} &
                                   {additionalHeaderElements?:JSX.Element[]}) {
+  const yfinCtx = useYFin()
   const wealthCtx = useWealth()
   const mainLayoutRef = useRef<MainLayoutRef|null>(null)
   const [selected, setSelected] = useState<YFinQuoteResult | null>(null)
   const [menuOpened, setMenuOpened] = useState<number>(0x000)
-  const [menuVals, setChartParams] = useState<ChartParams>({range:"1d", interval:"1d", event:null})
+  const [chartParams, setChartParams] = useState<ChartParams>({range:"1d", interval:"1d", event:null})
+
+  const getChartWithCache = useCache<YFinChartResult, typeof yfinCtx.chart>(yfinCtx.chart, {timeOutMillis:10*60*1000});
+  const [yfinChartData, setYFinChartData] = useState<YFinChartResult|null>(null)
+  const [isLoadingChart, setIsLoadingChart] = useState<boolean>(false)
+    
+  useEffect(() => {
+    const abortController = new AbortController()
+    if(selected) {
+      const symbol = selected.symbol
+      console.log("effect fetch yfin for symbol", symbol)
+      setIsLoadingChart(true)
+      getChartWithCache([symbol, chartParams, abortController])
+                    .then(result => {
+                        console.log("fetched data", result)
+                        setYFinChartData(result)
+                        setIsLoadingChart(false)
+                    },
+                    reason => {
+                        console.error("Faild to fetch chart from api", reason)
+                    })
+                    .catch(reason => {
+                        console.error("Faild to fetch chart from api", reason)
+                    })
+    }
+     return () => abortController.abort("aborted by effect.")
+  },[chartParams, selected])
+
 
   const detailRepresentation = useCallback((s:YFinQuoteResult) =>  {
     if(mainLayoutRef.current) {
-      console.log("layoput ref ready")
-      return (
+      console.log("layout ref ready")
+      if(yfinChartData) {
+        return (
         <>
-          {s && s.shortName}
-          <Chart symbol={s.symbol} range={menuVals.range} interval={menuVals.interval} event={menuVals.event}
-                 height={mainLayoutRef.current?.detailPane().height} width={mainLayoutRef.current?.detailPane().width} />
+            {s && s.shortName}
+            { isLoadingChart ?
+              <div className='loading'>loading chart ...</div>
+            :
+              <Chart title={`Symbol:${s.symbol} Range:${chartParams.range} Interval:${chartParams.interval} Events:${chartParams.event}`}
+                    data={parseData(yfinChartData) || []}
+                    height={mainLayoutRef.current?.detailPane().height} width={mainLayoutRef.current?.detailPane().width} />
+            }
         </>
-      )
+        )
+      } else {
+        return <></>
+      }
     } else {
-      console.log("layoput ref not ready")
+      console.log("layout ref not ready")
       return (
         <>
           {s && s.shortName}
         </>
       )
     }
-  },[mainLayoutRef])
+  },[yfinChartData])
               
   const onChangeRange = useCallback((v:string) => {console.log(`range ${v} selected`)}, [])
   const onMenuFlip = useCallback((flags:number) => setMenuOpened(flags),[])
@@ -55,13 +100,13 @@ export default function WealthApp({show,showBuy,additionalHeaderElements}:
                 title="Chart Range"  
                 onOpen={()=>onMenuFlip(0x100)}
                 onChange={onChangeRange} >
-                {_range.map((r:ChartParams["range"]) => <MenuItem<ChartParams["range"]> value={r} title={r as string}/>)}
+                {_range.map((r:ChartParams["range"], i) => <MenuItem<ChartParams["range"]> key={i} value={r} title={r as string}/>)}
           </Menu>
           <Menu key={menuId+1} opened={(menuOpened & 0x010) !== 0} 
                 title="Chart Interval"
                 onOpen={()=>onMenuFlip(0x010)}
                 onChange={onChangeRange} >
-                {_interval.map((r:ChartParams["interval"]) => <MenuItem<ChartParams["interval"]> value={r} title={r as string}/>)}
+                {_interval.map((r:ChartParams["interval"], i) => <MenuItem<ChartParams["interval"]> key={i} value={r} title={r as string}/>)}
           </Menu>
           <Menu key={menuId+2} opened={(menuOpened & 0x001) !== 0} 
                 title="Chart Events"

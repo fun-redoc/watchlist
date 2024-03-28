@@ -77,6 +77,7 @@ function useSettingContextProvider() {
             })
             .then(settings => { 
                 if(settings && settings.length>0) {
+                    console.log("settings loaded", settings)
                     // get the newest one - even if i clear all older entries, but i don't know if this remains in future, so caring for the most current entry does not harm
                     const newestSetting = settings.sort((a,b) => b.timestamp.getTime() - a.timestamp.getTime())[0]
                     console.info(`fetched settings from save date ${newestSetting.timestamp} with id ${newestSetting.id}`)

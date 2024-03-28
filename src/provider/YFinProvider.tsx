@@ -13,14 +13,14 @@ import useYFinApi, {
   YFinQuoteResult,
 } from "../hooks/useYFinApi";
 
-function useYFinProvider(): {
+function useYFinProvider(useMock:boolean): {
   queryResult: YFinAutocompleteResult[] | "loading";
   query: string | null;
   search: (query: string) => void;
-  getDetails: (symbol: string) => Promise<YFinQuoteResult | undefined>;
-  chart: (symbol:string, params:ChartParams) => Promise<YFinChartResult>;
+  getDetails: (symbol: string, abortController?:AbortController) => Promise<YFinQuoteResult | undefined>;
+  chart: (symbol:string, params:ChartParams, abortController?:AbortController) => Promise<YFinChartResult>;
 } {
-  const { autocomplete, getAsset, getChart } = useYFinApi();
+  const { autocomplete, getAsset, getChart } = useYFinApi(useMock);
   // Statemanagement Types
   async function searchYFin(
     q?: string | null,
@@ -67,12 +67,12 @@ function useYFinProvider(): {
   }, []);
 
   // Refactor: add abort controller
-  const getDetails = useCallback(async (symbol: string) => {
-    return getAsset(symbol);
+  const getDetails = useCallback(async (symbol: string, abortController?:AbortController) => {
+    return getAsset(symbol, abortController);
   }, [getAsset]);
 
-  const chart = useCallback(async (symbol:string, params:ChartParams) => {
-    return getChart(symbol, params)
+  const chart = useCallback(async (symbol:string, params:ChartParams, abortController?:AbortController) => {
+    return getChart(symbol, params, abortController)
   },[getChart])
 
   // returning the provider
@@ -88,7 +88,7 @@ export const useYFin = () => useContext(YFinContext);
 
 export function YFinProvider({ children }: { children: React.ReactNode }) {
   return (
-    <YFinContext.Provider value={useYFinProvider()}>
+    <YFinContext.Provider value={useYFinProvider(false)}>
       {children}
     </YFinContext.Provider>
   );

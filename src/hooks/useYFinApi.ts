@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-loss-of-precision */
 import { useCallback, useMemo } from "react";
 import { useSettings } from "../provider/SettingsProvider";
 
@@ -19,16 +20,18 @@ export default function useYFinApi(useMock = true): {
   };
   getChart: (
     symbol: string,
-    chartParams:ChartParams
+    chartParams:ChartParams,
     abortController?: AbortController,
   ) => Promise<YFinChartResult>;
 } {
   const settingsCtx = useSettings();
+  console.log(`useYFinApi settingsCtx: ${settingsCtx?.apiKey}`)
 
   const api_request = useCallback(async <T>(queryParams:string, abortController?:AbortController) : Promise<T> => {
       const headers: Headers = new Headers();
       headers.append("accept", "application/json");
       if (settingsCtx?.apiKey) {
+        console.log("api_request setting api key")
         headers.append("X-API-KEY", settingsCtx?.apiKey);
       } else {
         console.error("no api key provided in settings.");
@@ -36,9 +39,12 @@ export default function useYFinApi(useMock = true): {
           "No api key for yfinance found in settings. Edit your settings and try again.",
         );
       }
-      const service = `https://yfapi.net/v6/finance/`
+      const service = `https://yfapi.net/`
       //const query = service + `chart/${symbol}?region=DE&lang=de&range=max&interval=1d&events=div,split`;
       const query = service + queryParams
+      console.log("api_request query", query)
+      console.log("api_request headers", JSON.stringify(headers) )
+      headers.forEach((v,k) => console.log(`header key ${k} : value ${v}`))
       try {
         const response = await fetch(query, {
           method: "get",
@@ -47,25 +53,31 @@ export default function useYFinApi(useMock = true): {
           cache: "force-cache",
           signal: abortController?.signal,
         });
+        console.log("api_request response", response)
         if (response.status === 401 || response.status === 403) {
+          console.log("api_request response nok")
           throw {
             status: response.status,
             statusText: response.statusText,
           } as AuthError;
         }
         if (!response.ok) {
+          console.log("api_request response ok")
           throw {
             status: response.status,
             statusText: response.statusText,
           } as ApiError;
         }
         const result = await response.json();
+        console.log("api_request result", result)
         if (Object.prototype.hasOwnProperty.call(result, "error")) {
+          console.log("api_request result hase error branch")
           console.error(result.error);
           throw new Error(result.error);
         }
         return result;
       } catch (error) {
+        console.log("api_request error caught for query", query)
         console.error(error);
         throw new Error("failed to fetch data.");
       }
@@ -74,16 +86,16 @@ export default function useYFinApi(useMock = true): {
   // Refactor: result[0] takes the first result, but the index is also relevant in quote and adjquote...
   //           this can lead to mistakes, better solution could be constructing an own appropirate data structure
   const api_getChart = useCallback(async (symbol:string, chartParams:ChartParams, abortController?:AbortController) : Promise<YFinChartResult> => {
-      const query = `chart/${symbol}?region=DE&lang=de&range=${chartParams.range}&interval=${chartParams.interval}${chartParams.event ? "&events=" + chartParams.event : ""}`;
+      const query = `v8/finance/chart/${symbol}?region=DE&lang=de&range=${chartParams.range}&interval=${chartParams.interval}${chartParams.event ? "&events=" + chartParams.event : ""}`;
       return api_request<YFinChartResponse>(query, abortController)
         .then(response => response.chart.result[0] )
-  },[])
+  },[api_request])
 
   const api_getAssetBatch = useCallback( () => {
     const MAX_BATCH_SIZE = 10;
     async function api_fetchBatch(batchOfSymbols:string[], abortController?:AbortController) : Promise<YFinQuoteResult[]> {
         const symbols=batchOfSymbols.join(',')
-        const query = `quote?region=DE&lang=de&symbols=${encodeURI(symbols)}`;
+        const query = `v6/finance/quote?region=DE&lang=de&symbols=${encodeURIComponent(symbols)}`;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return api_request<any>(query, abortController)
           .then(response => response["quoteResponse"]["result"] )
@@ -98,11 +110,11 @@ export default function useYFinApi(useMock = true): {
       abortController?: AbortController,
     ): Promise<YFinAutocompleteResult[]> => {
 
-      const query = `autocomplete?region=DE&lang=de&query=${q}`;
+      const query = `v6/finance/autocomplete?region=DE&lang=de&query=${q}`;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return api_request<any>(query, abortController)
               .then(response => response["ResultSet"]["Result"] )
-    },[])
+    },[api_request])
 
   return useMemo<ReturnType<typeof useYFinApi>>(() => {
     if (useMock) { 
@@ -215,7 +227,7 @@ export type ChartParams = {
 
  interface Chart {
   result: YFinChartResult[]
-  error: any
+  error: unknown
 }
 
 export interface YFinChartResult {
@@ -290,7 +302,7 @@ export interface Adjclose {
 
 
 export async function mock_getChart(symbol:string, params:ChartParams, abortController?:AbortController) : Promise<YFinChartResult> {
-  console.warn("using mock autocomplete");
+  console.warn("using mock getChart");
   const response = 
  {
   "chart": {

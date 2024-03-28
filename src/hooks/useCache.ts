@@ -19,6 +19,7 @@ function doCache<RT, FT extends (...args: any) => Promise<RT>>(
   params: Parameters<FT>,
   cacheParams: { timeOutMillis: number } = { timeOutMillis: 10000},
 ): Promise<RT> {
+  const jsonParams = JSON.stringify(params)
   return new Promise<RT>((resolve, reject) => {
     const requestDB = window.indexedDB.open(DB_NAME_CACHE, DB_VERSION_CACHE);
     requestDB.onupgradeneeded = () => {
@@ -29,13 +30,13 @@ function doCache<RT, FT extends (...args: any) => Promise<RT>>(
       const db = requestDB.result;
       const transaction = db.transaction(["cache"], "readonly");
       const objectStore = transaction.objectStore("cache");
-      const request = objectStore.get(params.toString());
+      const request = objectStore.get(jsonParams);
       request.onsuccess = async () => {
         const result = request.result;
         if (result) {
           if (Date.now() - result.time < cacheParams.timeOutMillis) {
             console.info("Data fetched from cache")
-            resolve( result as RT)
+            resolve( result.value as RT)
             return
           }
         }
@@ -49,7 +50,7 @@ function doCache<RT, FT extends (...args: any) => Promise<RT>>(
             if(value) {
               const transactionWrite = db.transaction(["cache"], "readwrite");
               const objectStoreWrtie = transactionWrite.objectStore("cache");
-              const requestPut = objectStoreWrtie.put({ ...value, time: Date.now(), key: params.toString() });
+              const requestPut = objectStoreWrtie.put({ value: value, time: Date.now(), key: jsonParams });
               transactionWrite.commit()
               requestPut.onerror = ()=> {console.error(requestPut.error)}
               requestPut.onsuccess = ()=> {console.info("Data stored in cache.")}

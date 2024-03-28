@@ -1,4 +1,7 @@
 # TODO next
+- fetching charts in WealthApp - useCache does not use cache
+- chart print title
+- chart events: currently one can choose div or split, one should be able to choose div and split as well
 - useYFinProvider vs. useYFinApi.... Problems: 2 places to set useMock Parameter, on the other side, Chart would be less reusable with dependency on Provider...maybe Chart schuld not be dependent on anything?
 - after selection scroll to the details, provide geture or buttom to jump back to list or detail..
 - proper resizing of the Chart (WealthApp e.a) - resize event and maybe a separrate chart container div to improve the client Area calculation..

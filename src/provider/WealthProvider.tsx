@@ -3,6 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useReducer 
 import { DBManager, mkDBManager } from "../dbmanagement/DBManager";
 import useYFinApi, { YFinQuoteResult } from "../hooks/useYFinApi";
 import { matchQuery } from "../hooks/useMatchQuery";
+import useCache from "../hooks/useCache";
 
 export const DB_NAME_WEALTH = "wealthAppDB"
 export const DB_VERSION_WEALTH = 3    
@@ -62,7 +63,7 @@ type YFinQuoteBySymbol = {
 }
 
 // the hook "Constructor"
-function useWealthProvider():{
+function useWealthProvider(useMock=false):{
     filteredMasterdata:YFinQuoteBySymbol
     aggregations:TWealthBySymbol
     query:string
@@ -70,7 +71,9 @@ function useWealthProvider():{
     buy:(order:TOrder)  => void
     sell:(order:TOrder) => void
 } {
-    const {getAssetBatch} = useYFinApi()
+    const {getAssetBatch} = useYFinApi(useMock)
+    const {MAX_BATCH_SIZE, fetchBatch} = getAssetBatch 
+    const fetchBatchWithCache = useCache<YFinQuoteResult[], typeof fetchBatch>(fetchBatch, {timeOutMillis:24*60*60*1000})
     // state and action types for reducer based state management
     type TState = {
         db:DBManager<TTransaction>|null
@@ -165,20 +168,19 @@ function useWealthProvider():{
     },[db])
     useEffect(() => { // fetch detaildata to all symbols, after symbols had been loaded and on refresh signal
         const _fetchBatch = (async (abortController:AbortController) => {
-            const {MAX_BATCH_SIZE, fetchBatch} = getAssetBatch 
             const results:Promise<YFinQuoteResult[]>[] = []
             let curBatch:string[] = []
             symbols.forEach(s => {
                 if(!(s in masterData)) {
                     if(curBatch.length === MAX_BATCH_SIZE) {
-                        results.push(fetchBatch(curBatch, abortController))
+                        results.push(fetchBatchWithCache([curBatch, abortController]))
                         curBatch = []
                     }
                     curBatch.push(s)
                 }
             })
             if(curBatch.length > 0) {
-                results.push(fetchBatch(curBatch, abortController))
+                results.push(fetchBatchWithCache([curBatch, abortController]))
             }
             return Promise.all(results)
                 .then(batchResults => {

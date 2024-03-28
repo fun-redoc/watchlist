@@ -1,24 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import * as d3 from 'd3'
-import useYFinApi, { ChartParams, YFinChartResult } from "../hooks/useYFinApi";
-import useCache from "../hooks/useCache";
 
-interface ChartData {
+export interface ChartData {
     date:Date
     value:d3.NumberValue | undefined
 }
 
-function parseData(data:YFinChartResult):ChartData[] {
-    return data.timestamp.map((timestamp, i) => {
-        return {date:new Date(timestamp*1000), value:data.indicators.quote[0].close[i]} // prerequisite cart was fetched without "comparisons" parameter, beware!
-    })
-}
 
 interface ChartProps {
-    symbol:string
-    range:ChartParams["range"]
-    interval:ChartParams["interval"]
-    event:ChartParams["event"]
+    title?:string
+    data:ChartData[]
     height?:number|undefined
     width?:number|undefined
 }
@@ -26,37 +17,39 @@ interface ChartProps {
 // TODO show  error state
 // TODO handle stock splits appropriatelly
 // TODO chart exceeds the vieport...fix it
-export default function Chart({symbol, range, interval, event, height, width}:ChartProps) {
-    const yfinCtx = useYFinApi(false)
-    const getChartWithCache = useCache<YFinChartResult, typeof yfinCtx.getChart>(yfinCtx.getChart);
+export default function Chart({title, data, height, width}:ChartProps) {
     const svgRev = useRef<SVGSVGElement>(null)
-    const [yfinData, setYFinData] = useState<YFinChartResult|null>(null)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
-    
-
+//    const yfinCtx = useYFinApi(false)
+//    const getChartWithCache = useCache<YFinChartResult, typeof yfinCtx.getChart>(yfinCtx.getChart);
+//    const [yfinData, setYFinData] = useState<YFinChartResult|null>(null)
+//    const [isLoading, setIsLoading] = useState<boolean>(false)
+//    
+//
+//    useEffect(() => {
+//       console.log("effect fetch yfin for symbol", symbol)
+//       setIsLoading(true)
+//       const abortController = new AbortController()
+//       getChartWithCache([symbol, {range, interval, event}, abortController])
+//                    .then(result => {
+//                        console.log("fetched data", result)
+//                        setYFinData(result)
+//                        setIsLoading(false)
+//                    },
+//                    reason => {
+//                        console.error("Faild to fetch chart from api", reason)
+//                    })
+//                    .catch(reason => {
+//                        console.error("Faild to fetch chart from api", reason)
+//                    })
+//       return () => abortController.abort("aborted by effect.")
+//    },[symbol, yfinCtx])
+//
+// //   const chartData = useMemo(() =>  yfinData  && parseData(yfinData), [yfinData]) 
+//
     useEffect(() => {
-       console.log("effect fetch yfin for symbol", symbol)
-       setIsLoading(true)
-       const abortController = new AbortController()
-       getChartWithCache([symbol, {range, interval, event}, abortController])
-                    .then(result => {
-                        console.log("fetched data", result)
-                        setYFinData(result)
-                        setIsLoading(false)
-                    },
-                    reason => {
-                        console.error("Faild to fetch chart from api", reason)
-                    })
-                    .catch(reason => {
-                        console.error("Faild to fetch chart from api", reason)
-                    })
-       return () => abortController.abort("aborted by effect.")
-    },[symbol, yfinCtx])
-
-    const chartData = useMemo(() =>  yfinData  && parseData(yfinData), [yfinData]) 
-
-    useEffect(() => {
-        if(svgRev && chartData && chartData?.length > 0) {
+        console.log("hier", data)
+        if(svgRev && data && data?.length > 0) {
+        console.log(" und hier")
             const svgWidth = width || 200, svgHeight = height || 100
             const margin = { top: 20, right: 20, bottom: 30, left: 50 }
             const width1 = svgWidth - margin.left - margin.right
@@ -75,16 +68,16 @@ export default function Chart({symbol, range, interval, event, height, width}:Ch
                             .x((d) => x(d.date))
                             .y((d) => y(d.value||0))
 
-            //x.domain(d3.extent(chartData, (d) =>  d.date )); // typescript makes this line more complex but typesave :-))
-            const [min_date, max_date] = d3.extent(chartData, (d) =>  d.date );
+            //x.domain(d3.extent(data, (d) =>  d.date )); // typescript makes this line more complex but typesave :-))
+            const [min_date, max_date] = d3.extent(data, (d) =>  d.date );
             if(!min_date || ! max_date) {
                 console.error("d3 extent could not be determined.")
             } else {
                 x.domain([min_date || new Date(), max_date || new Date()]);
             }
 
-            //y.domain(d3.extent(chartData, (d) =>  d.value ));
-            const [min_value, max_value] = d3.extent(chartData, (d) =>  d.value );
+            //y.domain(d3.extent(data, (d) =>  d.value ));
+            const [min_value, max_value] = d3.extent(data, (d) =>  d.value );
             if(!min_value || ! max_value) {
                 console.error("d3 extent could not be determined.")
             } else {
@@ -107,7 +100,7 @@ export default function Chart({symbol, range, interval, event, height, width}:Ch
                 .text("Price (<TODO currency>)");
 
             g.append("path")
-                .datum(chartData)
+                .datum(data)
                 .attr("fill", "none")
                 .attr("stroke", "steelblue")
                 .attr("stroke-linejoin", "round")
@@ -116,15 +109,11 @@ export default function Chart({symbol, range, interval, event, height, width}:Ch
                 .attr("d", line);
         }
 
-    }, [svgRev, chartData])
+    }, [svgRev]) //, width, height]) // TODO handling of size changes is not adequate, it refers to the wrong element
 
     console.log(`width=${width}, height=${height}`)
-    return (
-        <> { isLoading ?
-                <div className="loading">loading chart data...</div>
-            :
-                <svg ref={svgRev} className="d3Container" />
-            }
-        </>
-    )
+    return  <>
+        <h3>{title}</h3>
+        <svg ref={svgRev} className="d3Container" />
+    </>
 }
