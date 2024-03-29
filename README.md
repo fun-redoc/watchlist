@@ -1,17 +1,17 @@
 # TODO next
-- after selection scroll to the details, provide geture or buttom to jump back to list or detail..
+- style everything (with css)
+- register a sell of an asset
+- Wealth App, provide aggregated values for: total yeald, yeald per asset class, yeald of sales
 - proper resizing of the Chart (WealthApp e.a) - resize event and maybe a separrate chart container div to improve the client Area calculation..
+- delete all entries of watchlist
+- after selection scroll to the details, provide geture or buttom to jump back to list or detail..
 - YFinApp: fetch chart data and paint it with d3 - mayb candelstick is better
 - WatchApp: fetch chart data and paint it with d3 - mayb candelstick is better
 - use caching YFin App
 - make settingspage responsive again
-- show details styled
-- style everything with css
 - compute stop loss signals (or get ATP)
 - refresh button in Wealth app to fetch newest quote / course data
-- register a sell of an asset
 - number input should be localized
-- delete all entries of watchlist
 - deleting all caches (in settings App)
 - useFinaApi.ts:api_getChart function ... refactore it: result[0] takes the first result, but the index is also relevant in quote and adjquote...
   //      this can lead to mistakes, better solution could be constructing an own appropirate data structure

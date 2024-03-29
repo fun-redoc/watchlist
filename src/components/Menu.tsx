@@ -4,8 +4,7 @@
 //  <MenuItem value="5d" title="Five Days" /> 
 //</Menu>
 
-import { ReactElement, useState } from "react"
-import MenuItem, { MenuItemProps } from "./MenuItem"
+import { useState } from "react"
 
 interface MenuProps<T> {
     title:string

@@ -29,9 +29,9 @@ export default function WealthApp({show,showBuy,additionalHeaderElements}:
   const mainLayoutRef = useRef<MainLayoutRef|null>(null)
   const [selected, setSelected] = useState<YFinQuoteResult | null>(null)
   const [menuOpened, setMenuOpened] = useState<number>(0x000)
-  const [chartParams, setChartParams] = useState<ChartParams>({range:"1d", interval:"1d", event:null})
+  const [chartParams, setChartParams] = useState<ChartParams>({range:"1y", interval:"1mo", event:"split"})
 
-  const getChartWithCache = useCache<YFinChartResult, typeof yfinCtx.chart>(yfinCtx.chart, {timeOutMillis:10*60*1000});
+  const getChartWithCache = useCache<YFinChartResult, typeof yfinCtx.chart>(yfinCtx.chart, {timeOutMillis:15*60*1000});
   const [yfinChartData, setYFinChartData] = useState<YFinChartResult|null>(null)
   const [isLoadingChart, setIsLoadingChart] = useState<boolean>(false)
     

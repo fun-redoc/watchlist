@@ -9,7 +9,6 @@ import MainLayout from "./MainLayout";
 import { TWatch } from "../models/watch";
 import { useWatchlist } from "../provider/WatchListProvider";
 import { YFinQuoteResult } from "../hooks/useYFinApi";
-import React from "react";
 import useCache from "../hooks/useCache";
 
 
@@ -20,8 +19,8 @@ export default function WatchApp({
   getDetails,
 }: { show: boolean } & { showBuy?: (selected: TWatch) => void } & {
   additionalHeaderElements?: JSX.Element[];
-} & { getDetails: (symbol: string) => Promise<YFinQuoteResult> }) {
-  const getDetailsCached = useCache<YFinQuoteResult, typeof getDetails>(getDetails,{timeOutMillis:1000*60*60})
+} & { getDetails: (symbol: string) => Promise<YFinQuoteResult | undefined> }) {
+  const getDetailsCached = useCache<YFinQuoteResult | undefined, typeof getDetails>(getDetails,{timeOutMillis:1000*60*60})
   const watchlistCtx = useWatchlist();
   const [selected, setSelected] = useState<TWatch | null>(null);
   const [details, setDetails] = useState<YFinQuoteResult | null | "loading">(
@@ -60,7 +59,7 @@ export default function WatchApp({
           setSelected(s);
           setDetails("loading");
           const details = await getDetailsCached([s.symbol]) // doCached<YFinQuoteResult, typeof getDetails>(getDetails, [s.symbol]);
-          setDetails(details);
+          setDetails(details || null);
         }}
         onDelete={onDelete}
       />

@@ -40,6 +40,8 @@ function doCache<RT, FT extends (...args: any) => Promise<RT>>(
             return
           }
         }
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         const promise = f(...params);
         return promise
           .catch(reason => {
@@ -62,6 +64,8 @@ function doCache<RT, FT extends (...args: any) => Promise<RT>>(
       };
       request.onerror = () => {
         console.error("No cache available, error:", request.error);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         f(...params)
         .catch(reason=>reject(reason))
         .then(result=> {
@@ -75,6 +79,8 @@ function doCache<RT, FT extends (...args: any) => Promise<RT>>(
     };
     requestDB.onerror = () => {
       console.error("No cache DB available, error:", requestDB.error);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       f(...params)
         .catch(reason=>reject(reason))
         .then(result=> {
