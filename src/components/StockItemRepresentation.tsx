@@ -1,4 +1,4 @@
-import React from "react"
+import './StockItemRepresentation.css'
 
 interface StockItemRepresentationProps {
     kind:string

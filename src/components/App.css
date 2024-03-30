@@ -1,3 +1,9 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 10px;
+    background-color: aliceblue;
+}
 .app {
     display:grid;
     height: 100vh;
@@ -19,25 +25,26 @@
 
 .app > #head {
     grid-area: head;
-    background: lightslategray;
+
+    padding-bottom: 5px;
+    border-bottom: groove;
 }
 .app > #list {
     grid-area: list;
-    background: lightgray;
+    padding-bottom: 5px;
+    border-bottom: groove;
 }
 
 .app > #detail {
     grid-area: detail;
-    background: lightsteelblue;
+    padding-top: 5px;
 }
 
-.stockItemRepresentationShort > * {
-    padding-right:1rem;
-}
-.stockItemRepresentationShort > #name {
-    font-size: smaller;
-}
-
-.line-chart {
-    border: 1px solid lightgray;    
+.mainMenu > button {
+  margin:0;
+  padding: 5px;
+  font-size: inherit;
+  background-color: aliceblue;
+  border-style: outset;
+  border-radius: 5px
 }

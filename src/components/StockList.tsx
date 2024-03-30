@@ -1,3 +1,4 @@
+import './StockList.css'
 import React from "react"
 import { ReactNode, useState } from "react"
 
@@ -13,7 +14,7 @@ export default function StockList<T>({list, onSelect, onDelete, stockRepresentat
         <>
             {
                 list && list.length > 0 ?
-                    <ul>
+                    <ul className='stockList'>
                         {list.map((s,i) => 
                             <li key={i}>
                                 <StockListItem value={s} i={i} selected={selectedKey !== null && (selectedKey === i)}
@@ -42,10 +43,10 @@ function StockListItem<T>({value, i,  selected, onSelect, onDelete, stockReprese
                     }}
             >{stockRepresentation(value)}</span>
         </div>
-        <div className="ListItemDeleteButton"
+        <span className="ListItemDeleteButton"
              hidden={!onDelete}
              onClick={()=> onDelete &&onDelete(value)}
-        >❌</div>
+        >❌</span>
         </>
     )
 }

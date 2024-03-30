@@ -1,3 +1,4 @@
+import './StockSearch.css'
 import { useEffect, useState } from "react"
 import { useDebounce } from "../hooks/useDebounce"
 /**
@@ -15,14 +16,12 @@ export default function StockSearch({onSearch, ...props}:StockSearchProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[debouncedSearchText])
     return (
-        <>
-        <input {...props} value={searchText} 
+        <input className="searchField" {...props} value={searchText} 
                         onChange={e=>{
                                 const newSearchText = e.target.value
                                 setSearchText(newSearchText)
                             }
                         }
         />
-        </>
     )
 }

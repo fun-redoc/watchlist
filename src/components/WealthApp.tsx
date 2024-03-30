@@ -93,32 +93,35 @@ export default function WealthApp({show,showBuy,additionalHeaderElements}:
   return (
     <MainLayout show={show} ref={mainLayoutRef}>
         <>
+          <div className='mainMenu'>{ additionalHeaderElements }</div>
+          <h1>Wealth</h1>
           <StockSearch onSearch={q=> { wealthCtx.search(q) }}/>
-          { additionalHeaderElements }
-          <Menu<ChartParams["range"]> key={menuId} opened={(menuOpened & 0x100) !== 0}
-                title={`Chart Range (${chartParams.range})`}
-                onOpen={()=>onMenuFlip(0x100)}
-                onClose={()=>setMenuOpened(f=> f&0x011)}
-                onChange={v=>setChartParams({...chartParams, range:v})} >
-                {_range.map((r:ChartParams["range"], i) => <MenuItem<ChartParams["range"]> key={i} value={r} title={r as string}/>)}
-          </Menu>
-          <Menu<ChartParams["interval"]> key={menuId+1} opened={(menuOpened & 0x010) !== 0} 
-                title={`Chart Interval (${chartParams.interval})`}
-                onOpen={()=>onMenuFlip(0x010)}
-                onClose={()=>setMenuOpened(f=> f&0x101)}
-                onChange={v=>setChartParams({...chartParams, interval:v})} >
-                {_interval.map((r:ChartParams["interval"], i) => <MenuItem<ChartParams["interval"]> key={i} value={r} title={r as string}/>)}
-          </Menu>
-          <Menu<ChartParams["event"]> key={menuId+2} opened={(menuOpened & 0x001) !== 0} 
-                title={`Chart Events (${chartParams.event ?  chartParams.event : "-"})`}
-                onOpen={()=>onMenuFlip(0x001)}
-                onClose={()=>setMenuOpened(f=> f&0x110)}
-                onChange={v=>setChartParams({...chartParams, event:v})} >
-            <MenuItem<ChartParams["event"]> value="div" title="Dividends" />
-            <MenuItem<ChartParams["event"]> value="split" title="Splits" />
-            <MenuItem<ChartParams["event"]> value="div,split" title="Splits & Dividends" />
-            <MenuItem<ChartParams["event"]> value={null} title="None" />
-          </Menu>
+          <div className='appMenu'>
+            <Menu<ChartParams["range"]> key={menuId} opened={(menuOpened & 0x100) !== 0}
+                  title={`Chart Range (${chartParams.range})`}
+                  onOpen={()=>onMenuFlip(0x100)}
+                  onClose={()=>setMenuOpened(f=> f&0x011)}
+                  onChange={v=>setChartParams({...chartParams, range:v})} >
+                  {_range.map((r:ChartParams["range"], i) => <MenuItem<ChartParams["range"]> key={i} value={r} title={r as string}/>)}
+            </Menu>
+            <Menu<ChartParams["interval"]> key={menuId+1} opened={(menuOpened & 0x010) !== 0} 
+                  title={`Chart Interval (${chartParams.interval})`}
+                  onOpen={()=>onMenuFlip(0x010)}
+                  onClose={()=>setMenuOpened(f=> f&0x101)}
+                  onChange={v=>setChartParams({...chartParams, interval:v})} >
+                  {_interval.map((r:ChartParams["interval"], i) => <MenuItem<ChartParams["interval"]> key={i} value={r} title={r as string}/>)}
+            </Menu>
+            <Menu<ChartParams["event"]> key={menuId+2} opened={(menuOpened & 0x001) !== 0} 
+                  title={`Chart Events (${chartParams.event ?  chartParams.event : "-"})`}
+                  onOpen={()=>onMenuFlip(0x001)}
+                  onClose={()=>setMenuOpened(f=> f&0x110)}
+                  onChange={v=>setChartParams({...chartParams, event:v})} >
+              <MenuItem<ChartParams["event"]> value="div" title="Dividends" />
+              <MenuItem<ChartParams["event"]> value="split" title="Splits" />
+              <MenuItem<ChartParams["event"]> value="div,split" title="Splits & Dividends" />
+              <MenuItem<ChartParams["event"]> value={null} title="None" />
+            </Menu>
+          </div>
         </>
 
         <StockList<YFinQuoteResult> 

@@ -11,7 +11,6 @@ import { YFinAutocompleteResult, YFinQuoteResult } from "../hooks/useYFinApi";
 import { useWatchlist } from "../provider/WatchListProvider";
 import { useYFin } from "../provider/YFinProvider";
 import Settings from "./Settings";
-import React from "react";
 
 enum AppMode {
   yfin,
@@ -52,11 +51,11 @@ export default function App() {
     },
   );
 
-
   useEffect(() => {
     if (buyFromWatchlist) modalRef?.current?.show();
     if (!buyFromWatchlist) modalRef?.current?.hide();
   }, [currentAppMode, buyFromWatchlist]);
+
   return (
     <>
       <YFinApp

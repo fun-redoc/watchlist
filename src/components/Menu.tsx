@@ -1,9 +1,4 @@
-
-//<Menu title="Chart Range"  onChange={onChangeRange} >
-//  <MenuItem value="1d" title="One Day" /> 
-//  <MenuItem value="5d" title="Five Days" /> 
-//</Menu>
-
+import './Menu.css'
 import { useState } from "react"
 
 interface MenuProps<T> {
@@ -19,7 +14,7 @@ export default function Menu<T>({title, opened, onOpen, onClose, onChange, child
     const [open, setOpen] = useState<boolean>(opened || false)
     return (
         <span className="dropdown">
-            <span className="dropDownTitle" onClick={()=> {
+            <button className="dropdownTitle" onClick={()=> {
                                                             const newOpen = !open
                                                             setOpen(newOpen);
                                                             if(newOpen) {
@@ -27,7 +22,7 @@ export default function Menu<T>({title, opened, onOpen, onClose, onChange, child
                                                             } else {
                                                                 onClose && onClose()
                                                             }
-                                                          }}>{title}</span>
+                                                          }}>{title}</button>
             { children && children.length > 0 &&  open &&
                 <ul className="menu">
                     {

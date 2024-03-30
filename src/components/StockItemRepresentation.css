@@ -1,0 +1,6 @@
+.stockItemRepresentationShort > * {
+    padding-right:1rem;
+}
+.stockItemRepresentationShort > #name {
+    font-size: smaller;
+}

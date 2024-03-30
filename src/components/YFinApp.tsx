@@ -29,8 +29,11 @@ export default function YFinApp({
   return (
     <MainLayout show={show}>
       <>
+        <div className="mainMenu">
+          {additionalHeaderElements}
+        </div>
+        <h1>Search Stock</h1>
         <StockSearch onSearch={yfinCtx.search} />
-        {additionalHeaderElements}
       </>
 
       {yfinCtx.queryResult === "loading" ? (

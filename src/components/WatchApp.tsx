@@ -35,12 +35,14 @@ export default function WatchApp({
   return (
     <MainLayout show={show}>
       <>
+        <div className="mainMenu">
+        {additionalHeaderElements}
+        </div>
         <StockSearch
           onSearch={(q) => {
             watchlistCtx.search(q);
           }}
         />
-        {additionalHeaderElements}
       </>
 
       <StockList<TWatch>
